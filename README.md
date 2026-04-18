@@ -1,5 +1,7 @@
 # realworld-axum-htmx
 
+[![CI](https://github.com/edpft/realworld-axum-htmx/actions/workflows/ci.yml/badge.svg)](https://github.com/edpft/realworld-axum-htmx/actions/workflows/ci.yml)
+
 A [RealWorld](https://realworld-docs.netlify.app/) demo app built in Rust using [Axum](https://github.com/tokio-rs/axum) and [HTMX](https://htmx.org/). Built as a personal learning project following domain-driven design and hexagonal architecture principles.
 
 ## Prerequisites
