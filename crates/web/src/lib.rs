@@ -1,3 +1,3 @@
-//! The web crate contains Axum handlers and HTMX templates. It is the primary
-//! entry point for HTTP requests and depends only on the application crate,
-//! never directly on domain or infrastructure.
+//! The web crate contains the HTTP layer. It is responsible for routing,
+//! request parsing, and response serialisation. It depends on the application
+//! crate for use cases and port traits.
