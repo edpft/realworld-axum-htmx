@@ -12,7 +12,13 @@ allow = [
     "Zlib",
 ]
 unused-allowed-license = "allow"
-unlicensed = "allow"
+# Workspace crates do not declare a licence yet
+exceptions = [
+    { allow = ["LicenseRef-scancode-unknown-license-reference"], name = "domain" },
+    { allow = ["LicenseRef-scancode-unknown-license-reference"], name = "application" },
+    { allow = ["LicenseRef-scancode-unknown-license-reference"], name = "infrastructure" },
+    { allow = ["LicenseRef-scancode-unknown-license-reference"], name = "web" },
+]
 
 [bans]
 multiple-versions = "warn"
