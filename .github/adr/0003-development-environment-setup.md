@@ -1,67 +1,44 @@
 # 0003: Development Environment Setup
 
 ## Context
-Developing in a consistent and reproducible environment is crucial for ensuring quality and reducing time spent on configuration issues. This document summarizes how to set up a development environment using various tools that streamline the process.
+Developing in a consistent and reproducible environment is crucial for ensuring quality and reducing time spent on configuration issues. This document summarizes the tools and configuration used in this project.
 
 ## Tools and Setup
+
 ### Nix Flakes
-Nix Flakes provides a mechanism for defining project dependencies and build specifications in a declarative manner. To use Nix flakes, ensure that you have Nix installed, and then create a `flake.nix` file in the root of your project:
-
-```nix
-{# flake.nix #}
-{
-  description = "A flake for a Rust project using Axum and HTMX";
-
-  inputs = {
-    # Define your dependencies here
-  };
-
-  outputs = { self, nixpkgs }: {
-    # Define your package outputs here
-  };
-}
-```
+Nix Flakes provides a mechanism for defining project dependencies and build specifications in a declarative manner. The `flake.nix` in the repo root defines the dev shell, including the Rust toolchain, mold linker, bacon, cargo-nextest, and PostgreSQL.
 
 ### direnv
-`direnv` allows you to automatically load environment variables depending on your directory. After installing `direnv`, create an `.envrc` file in your project root:
-
-```bash
-# .envrc
-use nix
-```
-
-Run `direnv allow` to enable it.
+`direnv` automatically loads the Nix dev shell when entering the project directory. The `.envrc` file in the project root enables this. Run `direnv allow` once after cloning.
 
 ### Mold Linker
-For faster build times, configure your project to use the mold linker by adding the following to your `.cargo/config.toml`:
-
-```toml
-[target.x86_64-unknown-linux-gnu]
-linker = "mold"
-```
-
-### Cargo Nextest
-To speed up your testing process, integrate `cargo-nextest`, a test runner that can run tests in parallel and cache results. Install it using:
+For faster incremental build times, the mold linker is configured via `RUSTFLAGS` in the Nix dev shell:
 
 ```bash
-cargo install cargo-nextest
+RUSTFLAGS="-C linker=mold -C target-cpu=native"
 ```
 
-You can run your tests in parallel with:
+This is set in `flake.nix` via `shellHook` rather than in `.cargo/config.toml`, so it applies only within the Nix dev environment and does not affect other users or CI unless they use the same shell.
+
+### Cargo Nextest
+`cargo-nextest` is the project's test runner. It runs tests in parallel and provides cleaner output than `cargo test`. It is included in the Nix dev shell. Run tests with:
+
 ```bash
 cargo nextest run
 ```
 
 ### Bacon
-`bacon` can be used to run your tests in a way that helps with visibility into test execution. Ensure you have set it up according to its documentation.
+`bacon` is a background build/test watcher. It is included in the Nix dev shell and provides instant feedback during development, which pairs well with a red-green-refactor workflow.
 
 ### Clippy Pedantic Lints
-To maintain code quality, we recommend running Clippy with the pedantic lints flag. Add this configuration to your `Cargo.toml`:
+Clippy lints are configured per-crate in `Cargo.toml` using the `[lints.clippy]` table, available since Rust 1.73. This is preferred over passing lints via `RUSTFLAGS` because it is scoped to the crate and checked in with the source code:
 
 ```toml
-[profile.dev]
-lints = "pedantic"
+[lints.clippy]
+pedantic = "warn"
 ```
 
+This should be added to each crate's `Cargo.toml` as they are created.
+
 ## Conclusion
-By following the above setup, you can achieve a robust and efficient development environment that enhances productivity and code quality.
+The dev environment is fully declarative via Nix Flakes and direnv. All tools are pinned and reproducible. Lint configuration lives in `Cargo.toml` per crate, not in environment-level flags.
