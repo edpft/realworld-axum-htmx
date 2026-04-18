@@ -51,5 +51,33 @@ The RealWorld spec permits username and email changes via the Update User endpoi
 
 **Rejected alternative**: using `Username` or `Email` as the primary identifier. Both are mutable and would require cascading updates across all references on change.
 
+## Decision 7: `PlaintextPassword` and `HashedPassword` as Newtypes Wrapping `Secret<String>`
+
+Passwords are represented as two distinct newtypes:
+
+- `PlaintextPassword(Secret<String>)` — represents raw user input; exists only transiently at the boundary and is never stored.
+- `HashedPassword(Secret<String>)` — represents a hashed password; used in the domain and passed to the persistence layer.
+
+Both wrap `Secret<String>` from the `secrecy` crate, which redacts the inner value in `Debug` and `Display` output, preventing accidental exposure in logs or error messages. For `PlaintextPassword` this is essential; for `HashedPassword` it is a defence-in-depth measure, as a leaked hash is still sensitive (it can be used in offline cracking attacks).
+
+The two distinct types make it impossible to accidentally pass a plaintext password where a hashed one is expected, or vice versa — the type system enforces the distinction.
+
+**Rejected alternative**: plain `String` for both. This allows plaintext passwords to leak into logs and provides no type-level distinction between raw and hashed values.
+
+## Decision 8: `PasswordHasher` as an Abstract Port
+
+Password hashing is defined as a port trait rather than a concrete implementation, consistent with Decision 3 (`TokenGenerator`):
+
+```rust
+pub trait PasswordHasher {
+    fn hash(&self, password: PlaintextPassword) -> HashedPassword;
+    fn verify(&self, password: PlaintextPassword, hash: &HashedPassword) -> bool;
+}
+```
+
+The application layer calls this port and receives a `HashedPassword`. The concrete implementation — including choice of algorithm (e.g. Argon2, bcrypt), cost factors, and salting — lives in the infrastructure layer. This keeps all cryptographic concerns out of the domain and application layers and makes hashing testable via a fake.
+
+**Rejected alternative**: calling a concrete hashing library directly from the application layer. This couples the application layer to an infrastructure concern and makes it harder to swap algorithms or test in isolation.
+
 ## Conclusion
-These decisions keep domain invariants in the domain layer, infrastructure concerns behind ports, and error types information-rich enough to be handled precisely at the boundary. `UserId` provides a stable internal identity that allows mutable profile fields to evolve freely.
+These decisions keep domain invariants in the domain layer, infrastructure concerns behind ports, and error types information-rich enough to be handled precisely at the boundary. `UserId` provides a stable internal identity that allows mutable profile fields to evolve freely. `Secret<String>` wrapping ensures sensitive values are never accidentally exposed.
