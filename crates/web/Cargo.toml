@@ -6,5 +6,5 @@ edition = "2021"
 [dependencies]
 application = { path = "../application" }
 
-[lints.clippy]
-pedantic = "warn"
+[lints]
+workspace = true

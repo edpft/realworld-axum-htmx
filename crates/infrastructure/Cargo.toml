@@ -7,5 +7,5 @@ edition = "2021"
 domain = { path = "../domain" }
 application = { path = "../application" }
 
-[lints.clippy]
-pedantic = "warn"
+[lints]
+workspace = true
