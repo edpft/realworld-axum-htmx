@@ -22,8 +22,6 @@
             pkgs.clang
             pkgs.bacon
             pkgs.cargo-nextest
-            pkgs.pkg-config
-            pkgs.postgresql
           ];
 
           shellHook = ''
