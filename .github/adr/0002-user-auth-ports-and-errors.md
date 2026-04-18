@@ -1,23 +1,31 @@
 # ADR 0002: User/Auth Context Ports and Error Design
 
 ## Context
-This document outlines important decisions made in the design of the user and authentication context in the system. The following four decisions are pivotal for the robustness, maintainability, and clarity of the system.
+This ADR records four design decisions for the user and authentication context.
 
-## Decision 1: Email Validation as a Value Object
-- **Summary**: We decided to treat email as a value object. This design choice enforces a consistent way of handling email addresses throughout the application, allowing better validation and comparison without the risk of misuse.
-- **Consequences**: This will prevent errors related to invalid email formats and ensure all functionalities that rely on email addresses are uniformly validated.
+## Decision 1: Email as a Value Object
 
-## Decision 2: UserExists as Part of UserRepository
-- **Summary**: The `UserRepository` interface includes a method, `UserExists`, to check for the existence of a user in the underlying storage. This centralizes user existence checks within the repository.
-- **Consequences**: This approach enhances encapsulation; other components need not know the specifics of how user existence is checked, thus reducing coupling.
+Email is modelled as a value object rather than a plain `String`. Validation is enforced at construction time, so any `Email` in the system is guaranteed to be well-formed. This removes the need for defensive validation throughout the codebase.
 
-## Decision 3: TokenGenerator as Abstract Port
-- **Summary**: A `TokenGenerator` port has been defined as an abstract interface for token generation. This allows different implementations to be plugged in as needed, enabling flexibility and testing.
-- **Consequences**: The system can evolve to support various token generation strategies without affecting other parts of the code, promoting adherence to the SOLID principles.
+**Rejected alternative**: validating email at the use-case layer. This leaks a domain concern into the application layer and allows invalid values to exist in memory.
 
-## Decision 4: UserAlreadyExists Error with DuplicateField Enum
-- **Summary**: We introduced a custom error, `UserAlreadyExists`, which utilizes a `DuplicateField` enum to specify which field is duplicated (e.g., email). This enhances error handling and provides more explicit feedback to the clients of the API.
-- **Consequences**: Clients will receive more meaningful errors, improving the ability to handle different cases of user creation failures effectively. It also aids in debugging and understanding the nature of the error.
+## Decision 2: `UserExists` on `UserRepository`
+
+The `UserRepository` port includes a `user_exists` method. User existence checks are a persistence concern and belong behind the repository abstraction.
+
+**Rejected alternative**: loading a full `User` and checking for `None`. This is wasteful and conflates a presence check with a full fetch.
+
+## Decision 3: `TokenGenerator` as an Abstract Port
+
+Token generation is defined as a port trait rather than a concrete implementation. This keeps the application layer free of crypto dependencies and makes token generation testable via a fake.
+
+**Rejected alternative**: calling a concrete JWT library directly from the use case. This couples the application layer to an infrastructure concern.
+
+## Decision 4: `UserAlreadyExists` with a `DuplicateField` Enum
+
+The registration error `UserAlreadyExists` carries a `DuplicateField` enum variant (e.g. `Email`) to indicate which field is duplicated. This gives callers enough information to return a meaningful error response without inspecting strings.
+
+**Rejected alternative**: a generic "conflict" error. This forces the web layer to guess which field caused the conflict.
 
 ## Conclusion
-The above decisions form a coherent strategy for handling user and authentication contexts, and the design choices are intended to maximize clarity, reusability, and maintainability throughout the application.
+These four decisions keep domain invariants in the domain layer, infrastructure concerns behind ports, and error types information-rich enough to be handled precisely at the boundary.
