@@ -24,10 +24,10 @@ jobs:
           toolchain: "1.95.0"
           components: rustfmt, clippy
 
-      - name: Install cargo-nextest
+      - name: Install cargo-nextest and cargo-deny
         uses: taiki-e/install-action@v2
         with:
-          tool: cargo-nextest
+          tool: cargo-nextest,cargo-deny
 
       - name: Cache
         uses: Swatinem/rust-cache@v2
@@ -40,6 +40,9 @@ jobs:
 
       - name: Clippy
         run: cargo clippy --workspace -- -D warnings
+
+      - name: Deny
+        run: cargo deny check
 
       - name: Test
         run: cargo nextest run --workspace --no-tests=pass
