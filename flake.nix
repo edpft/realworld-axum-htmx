@@ -1,0 +1,1 @@
+{ ".\": { "inputs": [ "rust-bin", "mold", "clang", "bacon", "cargo-nextest", "pkg-config", "postgresql" ], "shellHook": "export RUSTFLAGS='-C linker=mold -C target-cpu=native'" }}
