@@ -1,11 +1,18 @@
-[workspace]
-members = [
-    "crates/domain",
-    "crates/application",
-    "crates/infrastructure",
-    "crates/web",
-]
-resolver = "2"
+[package]
+name = "realworld-axum-htmx"
+version = "0.1.0"
+edition = "2021"
+publish = false
 
-[workspace.lints.clippy]
+[lints.clippy]
 pedantic = "warn"
+
+[dependencies]
+regex = "1.12.3"
+url = "2.5.8"
+uuid = "1.23.1"
+
+[dev-dependencies]
+fake = {version = "5.1.0", features = ["derive"]}
+proptest = "1.11.0"
+rand = "0.10.1"

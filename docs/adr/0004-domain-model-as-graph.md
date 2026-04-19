@@ -42,4 +42,4 @@ In a nested model, saving an `Article` can atomically save its `Comment`s within
 
 ## Notes
 - How edges are represented in code (e.g. foreign keys, join tables) is an infrastructure concern and is deferred to a future ADR.
-- See also: [ADR 0001: Bounded Contexts and Aggregates](.github/adr/0001-bounded-contexts-and-aggregates.md)
+- See also: [ADR 0001: Bounded Contexts and Aggregates](0001-bounded-contexts-and-aggregates.md)

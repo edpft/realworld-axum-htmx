@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(gh project *)",
+      "Bash(python3 -c \"import json,sys; items=json.load\\(sys.stdin\\)['items']; print\\(f'{len\\(items\\)} items in project'\\); [print\\(f\\\\\"  #{i['content']['number']} {i['content']['title']}\\\\\"\\) for i in items]\")",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx status)",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx log --oneline -5)",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx diff rust-toolchain.toml)",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx add Cargo.toml Cargo.lock rust-toolchain.toml CLAUDE.md src/ docs/ .claude/ .github/workflows/pages.yml .github/adr/ crates/)",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx status --short)",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx add .claude/settings.json)",
+      "Bash(git -C /Users/ed.fawcetttaylor/repos/realworld-axum-htmx commit -m ' *)"
+    ],
+    "additionalDirectories": [
+      "/Users/ed.fawcetttaylor/repos/realworld-axum-htmx/.github/adr"
+    ]
+  }
+}
