@@ -63,3 +63,5 @@ src/
 **Delegate freely:** test bodies once strategy is agreed, boilerplate handlers, DTO mapping, migration scaffolding, README prose.
 
 **Delivery:** one GitHub issue per chapter or logical group, one PR per shippable chunk. Write ADR Context + Decision when opening the PR; fill in Consequences at merge after feeling the implementation.
+
+**Commit messages:** Conventional Commits — `type(scope): description`. Types: `feat`, `test`, `docs`, `refactor`, `chore`, `fix`. Scopes: layer (`domain`, `infrastructure`, `web`) or context (`identity`, `articles`, `social`) or `adr`, `ci`.

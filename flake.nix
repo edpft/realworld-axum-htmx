@@ -22,6 +22,7 @@
             pkgs.clang
             pkgs.bacon
             pkgs.cargo-nextest
+            pkgs.gh
           ];
 
           shellHook = ''
